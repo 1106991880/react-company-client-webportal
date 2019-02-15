@@ -1,5 +1,5 @@
 import React from 'react'
-import {Table} from "antd";
+import {Table, Popconfirm} from "antd";
 
 class AppTable extends React.Component {
 
@@ -13,27 +13,28 @@ class AppTable extends React.Component {
         const tableColumns = [{
             title: '姓名',        //菜单内容
             dataIndex: 'name',   //在数据中对应的属性
-            key: 'name'   //key
+            //key: 'name'   //key
         }, {
             title: '性别',
             dataIndex: 'sex',
-            key: 'sex'
+            //key: 'sex'
         }, {
             title: '年龄',
             dataIndex: 'age',
-            key: 'age'
+            //key: 'age'
         }, {
             title: '邮箱',
             dataIndex: 'email',
-            key: 'email',
+            //key: 'email',
         }, {
             title: '操作',
             key: 'operation',
             render: (text, record) => (  //塞入内容
                 <span>
-        <a className="edit-data" onClick={() => editSource(text, record)}>编辑</a>
+        <span onClick={() => editSource(text, record)}>编辑</span>
                     &nbsp;&nbsp;&nbsp;
-                    <a className="delete-data" onClick={() => deleteSource(text, record)}>删除</a>
+                    {/*<a className="delete-data" onClick={() => deleteSource(text, record)}>删除</a>*/}
+                    <Popconfirm title="确定要删除吗?" onConfirm={() => deleteSource(text, record)}>删除</Popconfirm>
         </span>
             ),
         }];
@@ -42,7 +43,7 @@ class AppTable extends React.Component {
         return (
             <Table
                 columns={tableColumns} //表头
-                //rowKey={record => record.registered}
+                rowKey={record => record.id} //数据主键
                 dataSource={dataSource.data} //数据
                 pagination={{  //分页
                     total: dataSource.count, //数据总数量
