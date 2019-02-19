@@ -26,7 +26,7 @@ class AppPage extends React.Component {
             loading: true,//是否为加载中状态
             visible: false,//新增窗口隐藏
             isUpdate: false, //是否为修改
-            tableRowKey: '',//表主键
+            params:{}, //查询参数
         }
     }
 
@@ -61,11 +61,11 @@ class AppPage extends React.Component {
 
     componentDidMount() {
         //请求后台实际数据,默认查询第一页,每页显示5条数据
-        this.queryUser(1, 5);
+        this.handleSearch({},this.state.queryInfo.current, this.state.queryInfo.pageSize);
     }
 
     //查询数据
-    queryUser = (current, pageSize) => {
+    /**queryUser = (current, pageSize) => {
         var params = {
             queryCode: 'CESHI_QUERY_USER',
             current: current,//当前页码
@@ -86,7 +86,7 @@ class AppPage extends React.Component {
             },
             loading: false//是否为加载中状态
         })
-    }
+    }*/
 
     //单个删除
     deleteSource = (text, record) => {
@@ -95,7 +95,7 @@ class AppPage extends React.Component {
             console.log("删除用户成功");
             message.success('删除成功', 1);
             //刷新页面
-            this.queryUser(this.state.current, this.state.pageSize);
+            this.handleSearch(this.state.params,this.state.queryInfo.current, this.state.queryInfo.pageSize);
         } else {
             message.error('删除失败', 1);
         }
@@ -106,8 +106,7 @@ class AppPage extends React.Component {
         console.log("点击了修改每页显示的条数");
         console.log("current->改变显示条数时当前数据所在页----" + current);
         console.log("pageSize->改变后的一页显示条数----" + pageSize);
-        //设置新的状态每页显示条数
-        this.queryUser(current, pageSize);
+        this.handleSearch(this.state.params,current,pageSize);
     }
 
     //点击页码跳转
@@ -115,7 +114,7 @@ class AppPage extends React.Component {
         console.log("点击了选择页码跳转");
         console.log("page->改变后的页码----" + page);
         console.log("pageSize->每页显示的条数----" + pageSize);
-        this.queryUser(page, pageSize);
+        this.handleSearch(this.state.params,page,pageSize);
     }
 
     //新建信息弹窗
@@ -152,7 +151,7 @@ class AppPage extends React.Component {
                     visible: false
                 });
                 //刷新页面
-                this.queryUser(this.state.current, this.state.pageSize);
+                this.handleSearch(this.state.params,this.state.queryInfo.current, this.state.queryInfo.pageSize);
             } else {
                 message.error('添加失败', 1)
             }
@@ -194,32 +193,32 @@ class AppPage extends React.Component {
                     visible:false,
                 });
                 //刷新页面
-                this.queryUser(this.state.current, this.state.pageSize);
+                this.handleSearch(this.state.params,this.state.queryInfo.current, this.state.queryInfo.pageSize);
             }else {
                 message.error('修改失败', 1)
             }
-
         })
     }
 
     //form表单查询方式
-    handleSearch = (params) => {
-        console.log("params"+JSON.stringify(params));
+    handleSearch = (params,page,pageSize) => {
         params.queryCode='CESHI_QUERY_USER';
-        params.current=this.state.queryInfo.current;
-        params.pageSize=this.state.queryInfo.pageSize;
+        var paramsForm = params;
+        params.current=page;
+        params.pageSize=pageSize;
         console.log("params22"+JSON.stringify(params));
         var returnResult = AppService.queryUserInfo(params);
         this.setState({
             queryInfo: {//设置最初一页显示多少条数据
-                current:this.state.queryInfo.current,
-                pageSize: this.state.queryInfo.pageSize
+                current:page,
+                pageSize: pageSize
             },
             dataSource: {//数据存放
                 count: returnResult.total,//一共几条数据
                 data: returnResult.data,
             },
-            loading: false//是否为加载中状态
+            loading: false,//是否为加载中状态
+            params:paramsForm,//查询参数
         })
     }
 
@@ -230,7 +229,7 @@ class AppPage extends React.Component {
             <div>
                 <BreadcrumbCustom paths={['首页']}/>
                 <Card>
-                    <BaseForm formList={this.formList} filterSubmit={this.handleSearch.bind(this)}/>
+                    <BaseForm formList={this.formList} filterSubmit={this.handleSearch.bind(this)} queryInfo={this.state.queryInfo}/>
                 </Card>
                 <Card style={{marginTop:10}}>
                     <Button type="primary" onClick={this.createItem}><Icon type="plus"/>新增用户</Button>

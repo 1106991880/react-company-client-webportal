@@ -9,10 +9,12 @@ class FilterForm extends React.Component{
     }
 
     handleFilterSubmit = () => {
+        //获取表单的值
         let fieldsValue = this.props.form.getFieldsValue();
-        console.log("点击了表单提交查询---");
-        console.log(JSON.stringify(fieldsValue));
-        this.props.filterSubmit(fieldsValue);
+        //下面两个参数是父组件的current和pageSize
+        let current = this.props.queryInfo.current;
+        let pageSize = this.props.queryInfo.pageSize;
+        this.props.filterSubmit(fieldsValue,current,pageSize);
     }
     reset = () => {
         console.log("重置了查询表单");
